@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: predictor
+  namespace: predictive-hpa
+  labels:
+    app: predictor
+    app.kubernetes.io/name: predictive-hpa-predictor
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: predictor
+  endpoints:
+  - port: metrics
+    interval: 5s
+    path: /metrics
+    honorLabels: true
+  namespaceSelector:
+    matchNames:
+    - predictive-hpa

@@ -1,0 +1,92 @@
+# Prometheus Adapter Configuration
+# Mapeia métricas do Prometheus para External Metrics API do Kubernetes
+rules:
+  # Métricas externas para HPA preditivo
+  external:
+    # RPS previsto por serviço
+    - seriesQuery: 'predicted_rps{service!=""}'
+      resources:
+        overrides:
+          namespace:
+            resource: namespace
+      name:
+        matches: "predicted_rps"
+        as: "predicted_rps"
+      metricsQuery: 'predicted_rps{<<.LabelMatchers>>}'
+    
+    # Latência prevista por serviço
+    - seriesQuery: 'predicted_latency_seconds{service!=""}'
+      resources:
+        overrides:
+          namespace:
+            resource: namespace
+      name:
+        matches: "predicted_latency_seconds"
+        as: "predicted_latency"
+      metricsQuery: 'predicted_latency_seconds{<<.LabelMatchers>>}'
+    
+    # Utilização de CPU prevista
+    - seriesQuery: 'predicted_cpu_utilization{service!=""}'
+      resources:
+        overrides:
+          namespace:
+            resource: namespace
+      name:
+        matches: "predicted_cpu_utilization"
+        as: "predicted_cpu"
+      metricsQuery: 'predicted_cpu_utilization{<<.LabelMatchers>>}'
+
+  # Métricas customizadas por pod
+  custom:
+    # RPS atual por pod
+    - seriesQuery: 'http_requests_total{namespace!="",pod!=""}'
+      resources:
+        overrides:
+          namespace:
+            resource: namespace
+          pod:
+            resource: pod
+      name:
+        matches: "^(.*)_total$"
+        as: "${1}_per_second"
+      metricsQuery: 'rate(<<.Series>>{<<.LabelMatchers>>}[2m])'
+    
+    # Latência p95 por pod
+    - seriesQuery: 'http_request_duration_seconds_bucket{namespace!="",pod!=""}'
+      resources:
+        overrides:
+          namespace:
+            resource: namespace
+          pod:
+            resource: pod
+      name:
+        matches: "^(.*)_bucket$"
+        as: "${1}_p95"
+      metricsQuery: 'histogram_quantile(0.95, rate(<<.Series>>{<<.LabelMatchers>>}[2m]))'
+
+# Configuração de recursos
+resourceRules:
+  cpu:
+    containerQuery: 'sum(rate(container_cpu_usage_seconds_total{<<.LabelMatchers>>}[3m])) by (<<.GroupBy>>)'
+    nodeQuery: 'sum(rate(container_cpu_usage_seconds_total{<<.LabelMatchers>>, id="/"}[3m])) by (<<.GroupBy>>)'
+    resources:
+      overrides:
+        namespace:
+          resource: namespace
+        pod:
+          resource: pod
+        node:
+          resource: node
+    containerLabel: container
+  memory:
+    containerQuery: 'sum(container_memory_working_set_bytes{<<.LabelMatchers>>}) by (<<.GroupBy>>)'
+    nodeQuery: 'sum(container_memory_working_set_bytes{<<.LabelMatchers>>,id="/"}) by (<<.GroupBy>>)'
+    resources:
+      overrides:
+        namespace:
+          resource: namespace
+        pod:
+          resource: pod
+        node:
+          resource: node
+    containerLabel: container

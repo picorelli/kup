@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: predictive-hpa
+  labels:
+    name: predictive-hpa
+    app.kubernetes.io/name: predictive-hpa
+    app.kubernetes.io/version: "1.0.0"

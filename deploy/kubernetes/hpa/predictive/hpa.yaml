@@ -1,0 +1,108 @@
+# HPA Preditivo (Proposto) - Escalonamento baseado em métricas preditivas
+# Usa External Metrics expostas pelo serviço de predição via Prometheus Adapter
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: service-a-predictive-hpa
+  namespace: predictive-hpa
+  labels:
+    app: service-a
+    scaling-strategy: predictive
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: service-a
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  # Métrica preditiva: RPS previsto para os próximos 30 segundos
+  - type: External
+    external:
+      metric:
+        name: predicted_rps
+        selector:
+          matchLabels:
+            service: service-a
+      target:
+        type: AverageValue
+        # Capacidade por pod: ~100 RPS (ajustar conforme baseline)
+        averageValue: "10"
+  # Fallback: CPU para garantir estabilidade
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 120
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+    scaleUp:
+      # Sem estabilização para resposta rápida às predições
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 4
+        periodSeconds: 15
+      selectPolicy: Max
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: service-b-predictive-hpa
+  namespace: predictive-hpa
+  labels:
+    app: service-b
+    scaling-strategy: predictive
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: service-b
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  # Métrica preditiva: RPS previsto para os próximos 30 segundos
+  - type: External
+    external:
+      metric:
+        name: predicted_rps
+        selector:
+          matchLabels:
+            service: service-b
+      target:
+        type: AverageValue
+        averageValue: "10"
+  # Fallback: CPU para garantir estabilidade
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 120
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 4
+        periodSeconds: 15
+      selectPolicy: Max

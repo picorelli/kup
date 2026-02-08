@@ -1,0 +1,34 @@
+{
+  "id": null,
+  "title": "Router Dashboard",
+  "timezone": "browser",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Total Router Calls",
+      "targets": [
+        {"expr": "router_calls_total", "legendFormat": "Router Calls", "refId": "A"}
+      ],
+      "gridPos": {"x": 0, "y": 0, "w": 24, "h": 8}
+    },
+    {
+      "type": "graph",
+      "title": "Predicted Latency - Service A",
+      "targets": [
+        {"expr": "predict_router_latency_a_seconds", "legendFormat": "Predicted A", "refId": "B"}
+      ],
+      "gridPos": {"x": 0, "y": 9, "w": 12, "h": 8}
+    },
+    {
+      "type": "graph",
+      "title": "Predicted Latency - Service B",
+      "targets": [
+        {"expr": "predict_router_latency_b_seconds", "legendFormat": "Predicted B", "refId": "C"}
+      ],
+      "gridPos": {"x": 12, "y": 9, "w": 12, "h": 8}
+    }
+  ],
+  "schemaVersion": 30,
+  "version": 2,
+  "refresh": "5s"
+}

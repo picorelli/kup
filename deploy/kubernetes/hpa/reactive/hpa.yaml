@@ -1,0 +1,92 @@
+# HPA Reativo (Baseline) — escalonamento baseado em RPS observado
+# Usa a taxa de requisições real medida pelo Prometheus (reage após detectar a carga).
+# O target de 10 RPS/pod corresponde à capacidade do serviço (sleep 50-150ms).
+# Comparação justa com o HPA preditivo: mesma métrica (RPS/pod), só difere o timing.
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: service-a-reactive-hpa
+  namespace: predictive-hpa
+  labels:
+    app: service-a
+    scaling-strategy: reactive
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: service-a
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  - type: External
+    external:
+      metric:
+        name: observed_rps
+        selector:
+          matchLabels:
+            service: service-a
+      target:
+        type: AverageValue
+        averageValue: "10"
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 4
+        periodSeconds: 15
+      selectPolicy: Max
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: service-b-reactive-hpa
+  namespace: predictive-hpa
+  labels:
+    app: service-b
+    scaling-strategy: reactive
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: service-b
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  - type: External
+    external:
+      metric:
+        name: observed_rps
+        selector:
+          matchLabels:
+            service: service-b
+      target:
+        type: AverageValue
+        averageValue: "10"
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 4
+        periodSeconds: 15
+      selectPolicy: Max

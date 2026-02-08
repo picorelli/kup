@@ -1,0 +1,17 @@
+# monitoring/provisioning/datasources/datasource.yaml
+apiVersion: 1
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+
+
+# monitoring/dashboards/router_dashboard.json, service_a_dashboard.json e service_b_dashboard.json
+# (Os conteúdos desses arquivos já estão no documento e devem ser copiados conforme as versões atualizadas dos dashboards.)
+
+# Após adicionar esses arquivos:
+# - Suba tudo com `docker-compose up --build`
+# - O Grafana iniciará automaticamente com os dashboards carregados e a fonte de dados Prometheus configurada.
+# - Acesse o Grafana em http://localhost:3000 (admin / admin).

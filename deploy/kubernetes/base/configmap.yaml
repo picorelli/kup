@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: predictor-config
+  namespace: predictive-hpa
+data:
+  config.yaml: |
+    # Configurações do Serviço de Predição
+    predictor:
+      # Intervalo de atualização em segundos
+      update_interval: 30
+      
+      # Horizonte de predição em segundos (30-60s conforme pesquisa)
+      prediction_horizon: 30
+      
+      # Janela histórica em segundos (120s conforme pesquisa)
+      history_window: 120
+      
+      # Tamanho mínimo do histórico para treinamento
+      min_history_size: 5
+      
+      # Configurações dos modelos de ML
+      models:
+        # Modelo padrão: linear, random_forest, arima, lstm
+        default_model: random_forest
+        
+        # Usar modelo avançado quando disponível
+        use_advanced_model: true
+        
+        # Configurações Random Forest
+        random_forest:
+          n_estimators: 10
+          min_samples: 10
+        
+        # Configurações ARIMA
+        arima:
+          order: [5, 1, 0]
+        
+        # Configurações LSTM
+        lstm:
+          units: 50
+          epochs: 10
+          batch_size: 32
+      
+      # Configurações de métricas
+      metrics:
+        # Porta do servidor de métricas Prometheus (separada da API na 8080)
+        port: 9091
+        
+        # Intervalo de coleta de métricas
+        scrape_interval: 5s
+        
+        # Retenção do histórico de métricas
+        history_retention: 100
+    
+    # Configurações de logging
+    logging:
+      level: INFO
+      format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"

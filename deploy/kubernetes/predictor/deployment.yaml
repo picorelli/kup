@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: predictor
+  namespace: predictive-hpa
+  labels:
+    app: predictor
+    app.kubernetes.io/name: predictive-hpa-predictor
+    app.kubernetes.io/component: predictor
+    app.kubernetes.io/version: "1.0.0"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: predictor
+  template:
+    metadata:
+      labels:
+        app: predictor
+        app.kubernetes.io/name: predictive-hpa-predictor
+        app.kubernetes.io/component: predictor
+        app.kubernetes.io/version: "1.0.0"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9091"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: predictor
+      containers:
+      - name: predictor
+        image: predictive-hpa-predictor:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 9091
+          name: metrics
+          protocol: TCP
+        env:
+        - name: NAMESPACE
+          value: "predictive-hpa"
+        - name: LOG_LEVEL
+          value: "INFO"
+        - name: UPDATE_INTERVAL
+          value: "30"
+        - name: PREDICTION_HORIZON
+          value: "30"
+        - name: HISTORY_WINDOW
+          value: "120"
+        - name: MIN_HISTORY_SIZE
+          value: "5"
+        - name: API_PORT
+          value: "8080"
+        - name: METRICS_PORT
+          value: "9091"
+        - name: PROMETHEUS_URL
+          value: "http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        volumeMounts:
+        - name: config
+          mountPath: /app/config
+          readOnly: true
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+      volumes:
+      - name: config
+        configMap:
+          name: predictor-config
+      restartPolicy: Always

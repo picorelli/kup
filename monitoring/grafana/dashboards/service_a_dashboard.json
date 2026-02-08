@@ -1,0 +1,22 @@
+{
+  "id": null,
+  "title": "Service A Dashboard",
+  "timezone": "browser",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Service A Processing Time",
+      "targets": [
+        {
+          "expr": "rate(service_process_seconds_sum[1m]) / rate(service_process_seconds_count[1m])",
+          "legendFormat": "Avg Processing Time",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"x": 0, "y": 0, "w": 24, "h": 8}
+    }
+  ],
+  "schemaVersion": 30,
+  "version": 1,
+  "refresh": "5s"
+}

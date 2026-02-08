@@ -1,0 +1,25 @@
+# Core
+fastapi>=0.111.0
+uvicorn>=0.30.0
+pydantic>=2.5.0
+
+# HTTP clients
+requests>=2.32.0
+
+# Kubernetes
+kubernetes>=28.1.0
+
+# ML - Core (always required)
+numpy>=1.26.0
+scikit-learn>=1.5.0
+
+# ML - Advanced (optional, for ARIMA)
+statsmodels>=0.14.0
+
+# ML - Deep Learning (optional, for LSTM)
+# Uncomment if you need LSTM models:
+# tensorflow>=2.15.0
+
+# Metrics
+prometheus-client>=0.20.0
+

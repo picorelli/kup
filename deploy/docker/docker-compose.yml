@@ -1,0 +1,105 @@
+version: '3.8'
+
+services:
+  # Prediction service (DEFAULT_MODEL overridable: none, linear, random_forest, arima)
+  predictor:
+    build:
+      context: ../../src/predictor
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"   # API REST
+      - "9091:9091"   # Métricas Prometheus
+    environment:
+      - NAMESPACE=default
+      - LOG_LEVEL=INFO
+      - UPDATE_INTERVAL=30
+      - DEFAULT_MODEL=${DEFAULT_MODEL:-random_forest}
+      - API_PORT=8080
+      - METRICS_PORT=9091
+    networks:
+      - predictive-hpa
+
+  # Router com balanceamento preditivo
+  router:
+    build:
+      context: ../../src/workload
+      dockerfile: Dockerfile.router
+    ports:
+      - "8080:8000"
+      - "9200:9200"
+    environment:
+      - SERVICE_A_URL=http://service_a:8000/process
+      - SERVICE_B_URL=http://service_b:8000/process
+    depends_on:
+      - service_a
+      - service_b
+    networks:
+      - predictive-hpa
+
+  # Serviço A
+  service_a:
+    build:
+      context: ../../src/workload
+      dockerfile: Dockerfile.service
+    ports:
+      - "8000:8000"
+      - "9100:9100"
+    environment:
+      - SERVICE_NAME=service-a
+    networks:
+      - predictive-hpa
+
+  # Serviço B
+  service_b:
+    build:
+      context: ../../src/workload
+      dockerfile: Dockerfile.service
+    ports:
+      - "8001:8000"
+      - "9101:9100"
+    environment:
+      - SERVICE_NAME=service-b
+    networks:
+      - predictive-hpa
+
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    volumes:
+      - ../../monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../../monitoring/prometheus/rules:/etc/prometheus/rules
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
+    networks:
+      - predictive-hpa
+
+  # Grafana
+  grafana:
+    image: grafana/grafana:10.2.0
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    ports:
+      - "3001:3000"
+    volumes:
+      - ../../monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+      - ../../monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - predictive-hpa
+
+networks:
+  predictive-hpa:
+    driver: bridge
+
+volumes:
+  prometheus_data:
+  grafana_data:

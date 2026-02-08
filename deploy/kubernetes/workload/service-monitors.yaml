@@ -1,0 +1,48 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: service-a
+  namespace: predictive-hpa
+  labels:
+    app: service-a
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: service-a
+  namespaceSelector:
+    matchNames:
+      - predictive-hpa
+  endpoints:
+  - port: metrics
+    interval: 5s
+    scrapeTimeout: 4s
+    path: /metrics
+    relabelings:
+    - sourceLabels: [__meta_kubernetes_service_label_app]
+      targetLabel: service
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: service-b
+  namespace: predictive-hpa
+  labels:
+    app: service-b
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: service-b
+  namespaceSelector:
+    matchNames:
+      - predictive-hpa
+  endpoints:
+  - port: metrics
+    interval: 5s
+    scrapeTimeout: 4s
+    path: /metrics
+    relabelings:
+    - sourceLabels: [__meta_kubernetes_service_label_app]
+      targetLabel: service
