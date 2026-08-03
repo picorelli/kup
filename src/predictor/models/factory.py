@@ -7,7 +7,6 @@ import logging
 
 from models.base import BaseModel, ModelType
 from models.linear import LinearModel
-from models.random_forest import RandomForestModel
 from models.arima import ARIMAModel
 from models.lstm import LSTMModel, BiLSTMModel
 
@@ -20,7 +19,6 @@ class ModelFactory:
     
     _model_classes = {
         ModelType.LINEAR: LinearModel,
-        ModelType.RANDOM_FOREST: RandomForestModel,
         ModelType.ARIMA: ARIMAModel,
         ModelType.LSTM: LSTMModel,
         ModelType.BI_LSTM: BiLSTMModel,
@@ -102,9 +100,6 @@ class ModelFactory:
         elif data_size >= 12 and ARIMAModel.is_available():
             logger.info(f"Selected ARIMA (data_size={data_size})")
             return cls.create(ModelType.ARIMA)
-        elif data_size >= 10:
-            logger.info(f"Selected RandomForest (data_size={data_size})")
-            return cls.create(ModelType.RANDOM_FOREST)
         else:
             logger.info(f"Selected Linear (data_size={data_size})")
             return cls.create(ModelType.LINEAR)

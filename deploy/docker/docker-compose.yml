@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # Prediction service (DEFAULT_MODEL overridable: none, linear, random_forest, arima)
+  # Prediction service (DEFAULT_MODEL overridable: none, linear, arima)
   predictor:
     build:
       context: ../../src/predictor
@@ -13,7 +13,7 @@ services:
       - NAMESPACE=default
       - LOG_LEVEL=INFO
       - UPDATE_INTERVAL=30
-      - DEFAULT_MODEL=${DEFAULT_MODEL:-random_forest}
+      - DEFAULT_MODEL=${DEFAULT_MODEL:-linear}
       - API_PORT=8080
       - METRICS_PORT=9091
     networks:

@@ -17,7 +17,7 @@ class PredictionRequest(BaseModel):
     service_name: str
     metric: str = "rps"  # rps, latency
     horizon: int = 30  # seconds
-    model: Optional[str] = None  # linear, random_forest, arima, lstm
+    model: Optional[str] = None  # linear, arima, lstm
 
 
 class PredictionResponse(BaseModel):

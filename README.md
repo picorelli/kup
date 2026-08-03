@@ -109,8 +109,7 @@ python analysis/scripts/wilcoxon_test.py \
 
 | Modelo | Uso |
 |--------|-----|
-| Linear Regression | Warm-up (5-10 amostras) |
-| Random Forest | Principal (10+ amostras) |
+| Linear Regression | Principal (5-11 amostras) |
 
 ## Métricas
 

@@ -16,9 +16,9 @@ O Predictor Service coleta métricas do Prometheus, treina modelos preditivos e 
 │  │ Collectors  │  │   Models    │  │        API          │  │
 │  │             │  │             │  │                     │  │
 │  │ - Prometheus│  │ - Linear    │  │ - /api/v1/predict   │  │
-│  │ - Kubernetes│  │ - RandomFor │  │ - /api/v1/services  │  │
-│  │             │  │ - ARIMA     │  │ - /api/v1/models    │  │
-│  │             │  │ - LSTM      │  │                     │  │
+│  │ - Kubernetes│  │ - ARIMA     │  │ - /api/v1/services  │  │
+│  │             │  │ - LSTM      │  │ - /api/v1/models    │  │
+│  │             │  │             │  │                     │  │
 │  └──────┬──────┘  └──────┬──────┘  └──────────┬──────────┘  │
 │         │                │                     │             │
 │         └────────────────┼─────────────────────┘             │
@@ -37,7 +37,6 @@ O Predictor Service coleta métricas do Prometheus, treina modelos preditivos e 
 | Modelo | Descrição | Requisitos | Min. Amostras |
 |--------|-----------|------------|---------------|
 | `linear` | Regressão Linear | scikit-learn | 5 |
-| `random_forest` | Random Forest | scikit-learn | 10 |
 | `arima` | ARIMA(5,1,0) | statsmodels | 15 |
 | `lstm` | LSTM | tensorflow | 30 |
 | `bi_lstm` | Bidirectional LSTM | tensorflow | 30 |
@@ -69,7 +68,7 @@ python main.py
 | `UPDATE_INTERVAL` | Intervalo de atualização (s) | `30` |
 | `PREDICTION_HORIZON` | Horizonte de predição (s) | `30` |
 | `HISTORY_WINDOW` | Janela histórica (s) | `120` |
-| `DEFAULT_MODEL` | Modelo padrão | `random_forest` |
+| `DEFAULT_MODEL` | Modelo padrão | `linear` |
 | `METRICS_PORT` | Porta métricas Prometheus | `9090` |
 | `API_PORT` | Porta da API REST | `8080` |
 | `LOG_LEVEL` | Nível de log | `INFO` |
@@ -108,7 +107,7 @@ POST /api/v1/predict
   "service_name": "service-a",
   "metric": "rps",
   "horizon": 30,
-  "model": "random_forest"
+  "model": "linear"
 }
 ```
 
@@ -137,7 +136,7 @@ prediction_error_mae{service="service-a", metric="rps"} 4.2
 prediction_error_rmse{service="service-a", metric="rps"} 5.03
 
 # Contadores
-predictions_total{service="service-a", metric="rps", model="random_forest"} 100
+predictions_total{service="service-a", metric="rps", model="linear"} 100
 active_services_count 3
 ```
 
@@ -150,7 +149,6 @@ predictor/
 ├── models/              # Modelos de ML
 │   ├── base.py          # Classe base
 │   ├── linear.py        # Linear Regression
-│   ├── random_forest.py # Random Forest
 │   ├── arima.py         # ARIMA
 │   ├── lstm.py          # LSTM / Bi-LSTM
 │   └── factory.py       # Factory pattern

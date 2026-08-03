@@ -183,7 +183,7 @@ def build_table_rows(rows: list) -> str:
 
 
 def write_csv_results(timestamp: str, validate_row: dict, loadtest_row: dict, strategy: str = ""):
-    """Append one row to output/preliminary_results.csv. strategy: 'none', 'linear', 'random_forest', 'arima', or ''."""
+    """Append one row to output/preliminary_results.csv. strategy: 'none', 'linear', 'arima', or ''."""
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     path = OUTPUT_DIR / PRELIMINARY_RESULTS_CSV
     headers = [
@@ -329,7 +329,7 @@ def main():
             draft_path = Path(sys.argv[3])
             if len(sys.argv) >= 5:
                 strategy = sys.argv[4]
-        elif sys.argv[3] in ("none", "linear", "random_forest", "arima"):
+        elif sys.argv[3] in ("none", "linear", "arima"):
             strategy = sys.argv[3]
 
     validate_content = validate_path.read_text(encoding="utf-8")

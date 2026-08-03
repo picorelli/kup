@@ -7,7 +7,6 @@ Uses machine learning models to predict RPS and latency of services.
 
 Supported models:
 - Linear Regression
-- Random Forest
 - ARIMA (requires statsmodels)
 - LSTM / Bi-LSTM (requires TensorFlow)
 """
@@ -37,7 +36,7 @@ CONFIG = {
     "update_interval": int(os.getenv("UPDATE_INTERVAL", "30")),
     "prediction_horizon": int(os.getenv("PREDICTION_HORIZON", "30")),
     "history_window": int(os.getenv("HISTORY_WINDOW", "120")),
-    "default_model": os.getenv("DEFAULT_MODEL", "random_forest"),
+    "default_model": os.getenv("DEFAULT_MODEL", "linear"),
     "metrics_port": int(os.getenv("METRICS_PORT", "9091")),
     "api_port": int(os.getenv("API_PORT", "8080")),
 }

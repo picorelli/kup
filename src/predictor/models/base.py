@@ -12,7 +12,6 @@ import numpy as np
 class ModelType(Enum):
     """Available model types."""
     LINEAR = "linear"
-    RANDOM_FOREST = "random_forest"
     ARIMA = "arima"
     LSTM = "lstm"
     BI_LSTM = "bi_lstm"

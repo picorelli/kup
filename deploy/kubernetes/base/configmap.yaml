@@ -21,17 +21,12 @@ data:
       
       # Configurações dos modelos de ML
       models:
-        # Modelo padrão: linear, random_forest, arima, lstm
-        default_model: random_forest
-        
+        # Modelo padrão: linear, arima, lstm
+        default_model: linear
+
         # Usar modelo avançado quando disponível
         use_advanced_model: true
-        
-        # Configurações Random Forest
-        random_forest:
-          n_estimators: 10
-          min_samples: 10
-        
+
         # Configurações ARIMA
         arima:
           order: [5, 1, 0]

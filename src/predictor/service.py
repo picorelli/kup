@@ -86,7 +86,7 @@ class PredictionService:
         update_interval: int = 30,
         prediction_horizon: int = 30,
         history_window: int = 120,
-        default_model: str = "random_forest"
+        default_model: str = "linear"
     ):
         self.prometheus_url = prometheus_url
         self.namespace = namespace

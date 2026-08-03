@@ -140,7 +140,7 @@ def main():
 
     discussao = (
         "**Discussão por estratégia.** Na estratégia *none* (baseline, predictor desligado), as requisições foram atendidas com sucesso na execução registrada, servindo de referência. "
-        "Nas estratégias com predictor (linear, random_forest, arima), a stack manteve estabilidade; eventuais falhas pontuais e variações de latência devem ser analisadas com mais repetições e teste de Wilcoxon (subseção 4.4)."
+        "Nas estratégias com predictor (linear, arima), a stack manteve estabilidade; eventuais falhas pontuais e variações de latência devem ser analisadas com mais repetições e teste de Wilcoxon (subseção 4.4)."
     )
     new_section = f"""### 4.3 Resultados do load test por estratégia
 

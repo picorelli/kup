@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Bring up Docker stack, collect validation and load-test data per strategy
-# (none = predictor off, linear, random_forest, arima), write results to output/*.csv.
+# (none = predictor off, linear, arima), write results to output/*.csv.
 #
 # Usage: from repo root:
 #   ./scripts/run_and_collect_results.sh              # run all strategies
@@ -17,7 +17,7 @@ LOADTEST_OUT="/tmp/kup_loadtest_$$.txt"
 DRAFT="docs/content/preliminary-results/Draft_Preliminary_Results.md"
 
 # Strategies: none (predictor off), then one run per model
-STRATEGIES="${1:-none linear random_forest arima}"
+STRATEGIES="${1:-none linear arima}"
 if [ -n "$1" ]; then
   STRATEGIES="$1"
 fi
