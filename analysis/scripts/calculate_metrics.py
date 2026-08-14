@@ -130,10 +130,12 @@ def parse_prometheus_csv(csv_path: Path) -> dict:
         metrics["cpu_total_mean"] = float(cpu.mean())
         metrics["cpu_total_max"]  = float(cpu.max())
 
-    # Predicted RPS (if available)
+    # Predicted RPS (if available) — summed across services, mirroring how CPU
+    # is aggregated. Taking a single column would report only one service, and
+    # the router concentrates traffic on one of them.
     pred_cols = [c for c in df.columns if "predicted_rps" in c]
     if pred_cols:
-        pred = pd.to_numeric(df[pred_cols[0]], errors="coerce").dropna()
+        pred = df[pred_cols].apply(pd.to_numeric, errors="coerce").sum(axis=1)
         if not pred.empty:
             metrics["predicted_rps_mean"] = float(pred.mean())
 
