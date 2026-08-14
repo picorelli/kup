@@ -129,16 +129,21 @@ class PredictionService:
         return list(self._services.keys())
     
     def _create_model_for_data(self, data_size: int, model_type: Optional[str] = None) -> BaseModel:
-        """Create model appropriate for data size."""
-        if model_type:
-            try:
-                mt = ModelType(model_type)
-                model = ModelFactory.create(mt)
-                if model:
-                    return model
-            except ValueError:
-                pass
-        
+        """Create model appropriate for data size.
+
+        Honours the configured default model (DEFAULT_MODEL) so the service
+        stays on a single model type; only falls back to the size-based
+        cascade when the requested model cannot be created.
+        """
+        requested = model_type or self.default_model_type.value
+        try:
+            mt = ModelType(requested)
+            model = ModelFactory.create(mt)
+            if model:
+                return model
+        except ValueError:
+            pass
+
         return ModelFactory.create_best_available(data_size)
     
     def _update_service_state(self, service_name: str):
