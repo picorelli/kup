@@ -48,6 +48,7 @@ experiments/results/raw/*.json
 !experiments/results/raw/.gitkeep
 experiments/results/processed/*.csv
 !experiments/results/processed/.gitkeep
+experiments/results/archive_*/
 
 # Analysis outputs
 analysis/notebooks/.ipynb_checkpoints/
